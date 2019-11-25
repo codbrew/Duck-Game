@@ -17,8 +17,11 @@ public class BattleSystem : MonoBehaviour
     public Transform playerSpawn;
     public Transform enemySpawn;
 
-    PlayerUnitInfo playerUnit;
-    EnemyUnitInfo enemyUnit;
+    public PlayerUnitInfo playerUnit;
+    public EnemyUnitInfo enemyUnit;
+
+    public BattleHUDPlayer playerHUD;
+    public BattleHUDEnemy enemyHUD;
 
     // Start is called before the first frame update
     void Start()
@@ -35,6 +38,9 @@ public class BattleSystem : MonoBehaviour
         GameObject enemyGO = Instantiate(enemyPrefab, enemySpawn);
         enemyGO.GetComponent<EnemyUnitInfo>();
 
-        battleText.text = enemyUnit.enemyName + "looks uninterested...";
+        //battleText.text = enemyUnit.enemyName + "looks uninterested...";
+
+        playerHUD.Setup(playerUnit);
+        enemyHUD.Setup(enemyUnit);
     }
 }

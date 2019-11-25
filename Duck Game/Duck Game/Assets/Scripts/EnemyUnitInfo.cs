@@ -9,8 +9,8 @@ public class EnemyUnitInfo : MonoBehaviour
 
     public int damage;
 
-    public int maxHp;
-    public int currentHp;
+    public int maxLove;
+    public int currentLove;
 
 
 
