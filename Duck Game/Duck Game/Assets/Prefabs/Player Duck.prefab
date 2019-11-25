@@ -96,6 +96,7 @@ MonoBehaviour:
   unitName: lil Duck
   unitLvl: 1
   attraction: 2
+  rufflesFeathers: 15
   currentXp: 0
   maxLvlXp: 10
   maxConfidence: 100

@@ -15,7 +15,7 @@ public class BattleHUDEnemy : MonoBehaviour
         unitName.text = enemyUnitInfo.enemyName;
         unitLvl.text = enemyUnitInfo.enemyLvl.ToString();
 
-        loveMeter.maxValue = enemyUnitInfo.maxLove;
+        //loveMeter.maxValue = enemyUnitInfo.maxLove;
         loveMeter.value = enemyUnitInfo.currentLove;
 
        

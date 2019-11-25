@@ -23,24 +23,229 @@ public class BattleSystem : MonoBehaviour
     public BattleHUDPlayer playerHUD;
     public BattleHUDEnemy enemyHUD;
 
+    public Text hint1;
+    public Text hint2;
+    public Text hint3;
+    public Text hint4;
+    public Text hint5;
+
+    private string enemyName;
+
     // Start is called before the first frame update
     void Start()
     {
         state = BattleState.START;
-        SetupBattle();
+        StartCoroutine(SetupBattle());
     }
 
-    public void SetupBattle()
+    IEnumerator SetupBattle()
     {
        GameObject playerGO = Instantiate(playerPrefab, playerSpawn);
-        playerGO.GetComponent<PlayerUnitInfo>();
-
+        playerUnit = playerGO.GetComponent<PlayerUnitInfo>();
+        
         GameObject enemyGO = Instantiate(enemyPrefab, enemySpawn);
-        enemyGO.GetComponent<EnemyUnitInfo>();
+        enemyUnit = enemyGO.GetComponent<EnemyUnitInfo>();
 
-        //battleText.text = enemyUnit.enemyName + "looks uninterested...";
+        battleText.text = enemyUnit.enemyName + " looks uninterested...";
 
         playerHUD.Setup(playerUnit);
         enemyHUD.Setup(enemyUnit);
+
+        yield return new WaitForSeconds(2f);
+
+        state = BattleState.PLAYERTURN;
+        PlayerTurn();
+    }
+
+    IEnumerator PlayerQuackAttack()
+    {
+        bool isDead = enemyUnit.TakeDamage(playerUnit.attraction);
+
+        enemyHUD.SetLove(enemyUnit.currentLove);
+        battleText.text = "*Quacks*";
+
+        yield return new WaitForSeconds(2f);
+
+        if (isDead)
+        {
+            state = BattleState.WIN;
+            EndBattle();
+        }
+        else
+        {
+            state = BattleState.ENEMYTURN;
+            StartCoroutine(EnemyTurn());
+        }
+    }
+
+    IEnumerator PlayerRuffleFeathersAttack()
+    {
+        if(Random.Range(1,4) == 4){
+            bool isDead = enemyUnit.TakeDamage(playerUnit.rufflesFeathers);
+
+            enemyHUD.SetLove(enemyUnit.currentLove);
+            battleText.text = "*Ruffles Feathers*";
+
+            yield return new WaitForSeconds(2f);
+
+            if (isDead)
+            {
+                state = BattleState.WIN;
+                EndBattle();
+            }
+            else
+            {
+                state = BattleState.ENEMYTURN;
+                StartCoroutine(EnemyTurn());
+            }
+        }
+        else
+        {
+            
+            battleText.text = "Thicc Duck laughs! Was not effective";
+
+            yield return new WaitForSeconds(2f);
+
+            state = BattleState.ENEMYTURN;
+            StartCoroutine(EnemyTurn());
+        }
+    }
+
+    IEnumerator GiveGift()
+    {
+
+        yield return new WaitForSeconds(2f);
+    }
+
+    IEnumerator AskQuestion()
+    {
+        if(Random.Range(1,5) == 1 && hint1.enabled != true)
+        {
+            hint1.enabled = true;
+            battleText.text = "Thicc Duck rambles";
+            yield return new WaitForSeconds(3f);
+            state = BattleState.ENEMYTURN;
+
+        } else if (Random.Range(1,5) == 2 && hint2.enabled != true)
+        {
+            hint2.enabled = true;
+            battleText.text = "Thicc Duck rambles";
+            yield return new WaitForSeconds(3f);
+            state = BattleState.ENEMYTURN;
+
+        }
+        else if (Random.Range(1,5) == 3 && hint3.enabled != true)
+        {
+            hint3.enabled = true;
+            battleText.text = "Thicc Duck rambles";
+            yield return new WaitForSeconds(3f);
+            state = BattleState.ENEMYTURN;
+
+        }
+        else if (Random.Range(1,5) == 4 && hint4.enabled != true)
+        {
+            hint4.enabled = true;
+            battleText.text = "Thicc Duck rambles";
+            yield return new WaitForSeconds(3f);
+            state = BattleState.ENEMYTURN;
+
+        }
+        else if (Random.Range(1,5) == 5 && hint5.enabled != true)
+        {
+            hint5.enabled = true;
+            battleText.text = "Thicc Duck rambles";
+            yield return new WaitForSeconds(3f);
+            state = BattleState.ENEMYTURN;
+
+        }
+        
+    }
+
+    IEnumerator EnemyTurn()
+    {
+        battleText.text = enemyUnit.enemyName + " glares at you";
+
+        yield return new WaitForSeconds(1f);
+
+        bool isDead = playerUnit.TakeDamage(enemyUnit.damage);
+
+        playerHUD.SetConfidence(playerUnit.currentConfidence);
+
+        yield return new WaitForSeconds(2f);
+
+        if (isDead)
+        {
+            state = BattleState.LOST;
+            EndBattle();
+        }
+        else
+        {
+            state = BattleState.PLAYERTURN;
+            PlayerTurn();
+        }
+    }
+
+    void EndBattle()
+    {
+        if(state == BattleState.WIN)
+        {
+            battleText.text = "You did it! Thicc Duck has fallen for you!";
+        }else if (state == BattleState.LOST)
+        {
+            battleText.text = "Oh no! Thicc Duck has waddled away!";
+        }
+    }
+
+    void PlayerTurn()
+    {
+        battleText.text = "Choose an action:";
+    }
+
+    public void OnQuackButton()
+    {
+        if(state != BattleState.PLAYERTURN)
+        {
+            return;
+        }
+        else
+        {
+            StartCoroutine(PlayerQuackAttack());
+        }
+    }
+
+    public void OnRuffleFeathersButton()
+    {
+        if (state != BattleState.PLAYERTURN)
+        {
+            return;
+        }
+        else
+        {
+            StartCoroutine(PlayerRuffleFeathersAttack());
+        }
+    }
+
+    public void OnGiveGiftButton()
+    {
+        if (state != BattleState.PLAYERTURN)
+        {
+            return;
+        }
+        else
+        {
+            StartCoroutine(GiveGift());
+        }
+    }
+
+    public void OnAskQuestionButton()
+    {
+        if (state != BattleState.PLAYERTURN)
+        {
+            return;
+        }
+        else
+        {
+            StartCoroutine(AskQuestion());
+        }
     }
 }

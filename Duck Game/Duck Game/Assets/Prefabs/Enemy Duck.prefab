@@ -96,5 +96,8 @@ MonoBehaviour:
   enemyName: Thicc Duck
   enemyLvl: 10
   damage: 15
-  maxHp: 100
-  currentHp: 5
+  maxLove: 0
+  currentLove: 0
+  primaryGift: 1
+  secondaryGift: 0
+  dislikedGift: 2
