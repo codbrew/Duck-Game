@@ -30,6 +30,13 @@ public class BattleSystem : MonoBehaviour
     public Text hint5;
 
     private string enemyName;
+    private int randomAnswer;
+
+    private int expForAttack;
+    private int currentEXP;
+
+    public Slider expBar;
+
 
     // Start is called before the first frame update
     void Start()
@@ -64,6 +71,10 @@ public class BattleSystem : MonoBehaviour
         enemyHUD.SetLove(enemyUnit.currentLove);
         battleText.text = "*Quacks*";
 
+        expForAttack = playerUnit.attraction / 2;
+        currentEXP += expForAttack;
+        CalculateEXP();
+
         yield return new WaitForSeconds(2f);
 
         if (isDead)
@@ -80,11 +91,15 @@ public class BattleSystem : MonoBehaviour
 
     IEnumerator PlayerRuffleFeathersAttack()
     {
-        if(Random.Range(1,4) == 4){
+        if(Random.Range(1,4) >= 3) { 
             bool isDead = enemyUnit.TakeDamage(playerUnit.rufflesFeathers);
 
             enemyHUD.SetLove(enemyUnit.currentLove);
             battleText.text = "*Ruffles Feathers*";
+
+            expForAttack = playerUnit.rufflesFeathers / 2;
+            currentEXP += expForAttack;
+            CalculateEXP();
 
             yield return new WaitForSeconds(2f);
 
@@ -119,46 +134,57 @@ public class BattleSystem : MonoBehaviour
 
     IEnumerator AskQuestion()
     {
-        if(Random.Range(1,5) == 1 && hint1.enabled != true)
-        {
-            hint1.enabled = true;
-            battleText.text = "Thicc Duck rambles";
-            yield return new WaitForSeconds(3f);
-            state = BattleState.ENEMYTURN;
+        //Debug.Log("button works");
 
-        } else if (Random.Range(1,5) == 2 && hint2.enabled != true)
+        randomAnswer = Random.Range(1, 5);
+
+        if (randomAnswer == 1)
         {
-            hint2.enabled = true;
-            battleText.text = "Thicc Duck rambles";
-            yield return new WaitForSeconds(3f);
+            hint1.gameObject.SetActive(true);
+            battleText.text = "Thicc Duck rambles on..";
+
+            yield return new WaitForSeconds(2f);
             state = BattleState.ENEMYTURN;
+            StartCoroutine(EnemyTurn());
+        }else if(randomAnswer == 2)
+        {
+            hint2.gameObject.SetActive(true);
+            battleText.text = "Thicc Duck rambles on..";
+
+            yield return new WaitForSeconds(2f);
+            state = BattleState.ENEMYTURN;
+            StartCoroutine(EnemyTurn());
+        }
+        else if(randomAnswer == 3)
+        {
+            hint3.gameObject.SetActive(true);
+            battleText.text = "Thicc Duck rambles on..";
+
+            yield return new WaitForSeconds(2f);
+            state = BattleState.ENEMYTURN;
+            StartCoroutine(EnemyTurn());
 
         }
-        else if (Random.Range(1,5) == 3 && hint3.enabled != true)
+        else if(randomAnswer == 4)
         {
-            hint3.enabled = true;
-            battleText.text = "Thicc Duck rambles";
-            yield return new WaitForSeconds(3f);
-            state = BattleState.ENEMYTURN;
+            hint4.gameObject.SetActive(true);
+            battleText.text = "Thicc Duck rambles on..";
 
+            yield return new WaitForSeconds(2f);
+            state = BattleState.ENEMYTURN;
+            StartCoroutine(EnemyTurn());
         }
-        else if (Random.Range(1,5) == 4 && hint4.enabled != true)
+        else if(randomAnswer == 5)
         {
-            hint4.enabled = true;
-            battleText.text = "Thicc Duck rambles";
-            yield return new WaitForSeconds(3f);
-            state = BattleState.ENEMYTURN;
+            hint5.gameObject.SetActive(true);
+            battleText.text = "Thicc Duck rambles on..";
 
-        }
-        else if (Random.Range(1,5) == 5 && hint5.enabled != true)
-        {
-            hint5.enabled = true;
-            battleText.text = "Thicc Duck rambles";
-            yield return new WaitForSeconds(3f);
+            yield return new WaitForSeconds(2f);
             state = BattleState.ENEMYTURN;
-
+            StartCoroutine(EnemyTurn());
         }
-        
+   
+
     }
 
     IEnumerator EnemyTurn()
@@ -247,5 +273,19 @@ public class BattleSystem : MonoBehaviour
         {
             StartCoroutine(AskQuestion());
         }
+    }
+
+    void CalculateEXP()
+    {
+        if(playerUnit.currentXp < 100)
+        {
+            playerUnit.currentXp = currentEXP;
+            expBar.value = playerUnit.currentXp;
+        }else if(playerUnit.currentXp > 100)
+        {
+            playerUnit.currentXp = 0;
+            playerUnit.unitLvl++;
+        }
+        
     }
 }
