@@ -12,6 +12,8 @@ public class CharacterController : MonoBehaviour
     private float _horizontalMoveInput;
 
     private bool _walkingDiagonal;
+    public Transform leftBound;
+    public Transform rightbound;
 
     public void Start()
     {
@@ -20,28 +22,36 @@ public class CharacterController : MonoBehaviour
     public void FixedUpdate()
     {
         Vector2 targetVelocity = new Vector2(Input.GetAxisRaw("Horizontal"), 0);
-        GetComponent<Rigidbody2D>().velocity = targetVelocity * playerSpeed;
+
+            GetComponent<Rigidbody2D>().velocity = targetVelocity * playerSpeed;
         //_verticalMoveInput = Input.GetAxisRaw("Vertical");
+  
         _horizontalMoveInput = Input.GetAxisRaw("Horizontal");
 
-        
 
-        if (_horizontalMoveInput < 0)
+
+        if (_horizontalMoveInput < 0 && transform.position.x > leftBound.position.x)
         {
-            animator.SetBool("WalkingLeft", true);
+            if (transform.position.x > leftBound.position.x)
+            {
+                animator.SetBool("WalkingLeft", true);
+                transform.eulerAngles = new Vector3(transform.eulerAngles.x, 0, transform.eulerAngles.z);
+            }
+        }
+
+        else if (_horizontalMoveInput > 0)
+        {
+            if (transform.position.x < rightbound.position.x)
+            {
+                animator.SetBool("WalkingLeft", true);
+                transform.eulerAngles = new Vector3(transform.eulerAngles.x, 180, transform.eulerAngles.z);
+            }
+
         }
         else
         {
             animator.SetBool("WalkingLeft", false);
         }
 
-        if (_horizontalMoveInput > 0)
-        {
-            animator.SetBool("WalkingRight", true);
-        }
-        else
-        {
-            animator.SetBool("WalkingRight", false);
-        }
     }
 }
