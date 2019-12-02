@@ -281,11 +281,19 @@ public class BattleSystem : MonoBehaviour
         {
             playerUnit.currentXp = currentEXP;
             expBar.value = playerUnit.currentXp;
-        }else if(playerUnit.currentXp > 100)
+        }
+        if (playerUnit.currentXp >= 100)
         {
             playerUnit.currentXp = 0;
             playerUnit.unitLvl++;
+            LevelUp();
         }
         
+    }
+
+    void LevelUp()
+    {
+        playerUnit.attraction += 5;
+        playerUnit.rufflesFeathers += 10;
     }
 }

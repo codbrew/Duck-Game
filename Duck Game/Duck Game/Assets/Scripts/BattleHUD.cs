@@ -15,7 +15,7 @@ public class BattleHUDPlayer : MonoBehaviour
     public void Setup(PlayerUnitInfo playerUnitInfo)
     {
         unitName.text = playerUnitInfo.unitName;
-        unitLvl.text = playerUnitInfo.unitLvl.ToString();
+        unitLvl.text = "lvl " + playerUnitInfo.unitLvl.ToString();
 
         confidenceSlider.maxValue = playerUnitInfo.maxConfidence;
         confidenceSlider.value = playerUnitInfo.currentConfidence;
