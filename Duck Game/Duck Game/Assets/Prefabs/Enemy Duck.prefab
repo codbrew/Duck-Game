@@ -93,11 +93,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f33e3b92cb31871488001bb55cf50cd5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyName: Thicc Duck
-  enemyLvl: 10
-  damage: 15
-  maxLove: 0
+  enemyName: Capian
+  enemyLvl: 2
+  damage: 10
+  maxLove: 100
   currentLove: 0
-  primaryGift: 1
+  primaryGift: 0
   secondaryGift: 0
-  dislikedGift: 2
+  dislikedGift: 0

@@ -17,7 +17,11 @@ public class EnemyUnitInfo : MonoBehaviour
     public GiftTypes.gift dislikedGift;
 
 
+    private void Start()
+    {
+        DontDestroyOnLoad(this);
 
+    }
     public bool TakeDamage(int dmg)
     {
         currentLove += dmg;

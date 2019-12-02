@@ -93,11 +93,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2832eee9be6f0f34da7cfa8ef0ed68b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  unitName: lil Duck
-  unitLvl: 1
-  attraction: 2
+  unitName: Ronald
+  unitLvl: 2
+  attraction: 20
   rufflesFeathers: 15
-  currentXp: 0
-  maxLvlXp: 10
+  currentXp: 65
+  maxLvlXp: 100
   maxConfidence: 100
-  currentConfidence: 50
+  currentConfidence: 30

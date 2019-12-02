@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerUnitInfo : MonoBehaviour
 {
+    
     public string unitName;
     public int unitLvl;
 
@@ -15,7 +16,12 @@ public class PlayerUnitInfo : MonoBehaviour
 
     public int maxConfidence;
     public int currentConfidence;
-
+    public int earnedExperience;
+    public int npcTalkCounter;
+    private void Start()
+    {
+        DontDestroyOnLoad(this);
+    }
     public bool TakeDamage(int dmg)
     {
         currentConfidence -= dmg;
@@ -29,5 +35,4 @@ public class PlayerUnitInfo : MonoBehaviour
             return false;
         }
     }
-
 }

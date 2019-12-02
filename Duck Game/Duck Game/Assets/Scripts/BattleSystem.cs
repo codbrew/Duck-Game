@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
+using UnityEngine.SceneManagement;
 public enum BattleState {START, PLAYERTURN, ENEMYTURN, WIN, LOST}
 
 public class BattleSystem : MonoBehaviour
 {
+
     public Text battleText;
 
     public BattleState state;
@@ -36,22 +37,25 @@ public class BattleSystem : MonoBehaviour
     private int currentEXP;
 
     public Slider expBar;
-
-
+    public Sprite[] playerSprites;
+    public Sprite[] enemySprites;
+    public SpriteRenderer playerImage;
+    public SpriteRenderer enemyImage;
+    public AudioSource angryQuack;
+    public AudioSource quack;
     // Start is called before the first frame update
     void Start()
     {
         state = BattleState.START;
         StartCoroutine(SetupBattle());
+        expBar.value = playerUnit.currentXp;
     }
 
     IEnumerator SetupBattle()
     {
-       GameObject playerGO = Instantiate(playerPrefab, playerSpawn);
-        playerUnit = playerGO.GetComponent<PlayerUnitInfo>();
-        
-        GameObject enemyGO = Instantiate(enemyPrefab, enemySpawn);
-        enemyUnit = enemyGO.GetComponent<EnemyUnitInfo>();
+        playerUnit = GameObject.FindGameObjectWithTag("PlayerManager").GetComponent<PlayerUnitInfo>();
+
+        enemyUnit = GameObject.FindGameObjectWithTag("EnemyManager").GetComponent<EnemyUnitInfo>();
 
         battleText.text = enemyUnit.enemyName + " looks uninterested...";
 
@@ -61,26 +65,34 @@ public class BattleSystem : MonoBehaviour
         yield return new WaitForSeconds(2f);
 
         state = BattleState.PLAYERTURN;
+        playerImage.sprite = playerSprites[1];
         PlayerTurn();
     }
 
     IEnumerator PlayerQuackAttack()
     {
+        playerImage.sprite = playerSprites[2];
         bool isDead = enemyUnit.TakeDamage(playerUnit.attraction);
 
         enemyHUD.SetLove(enemyUnit.currentLove);
         battleText.text = "*Quacks*";
-
-        expForAttack = playerUnit.attraction / 2;
-        currentEXP += expForAttack;
-        CalculateEXP();
-
+        expForAttack = playerUnit.earnedExperience / 2;
+        currentEXP = expForAttack;
+        quack.Play();
         yield return new WaitForSeconds(2f);
-
+        playerImage.sprite = playerSprites[0];
+        if(CalculateEXP())
+        {
+            playerImage.sprite = playerSprites[1];
+            yield return new WaitForSeconds(4f);
+        }
         if (isDead)
         {
             state = BattleState.WIN;
             EndBattle();
+            yield return new WaitForSeconds(2f);
+            SceneManager.LoadScene("Overworld");
+
         }
         else
         {
@@ -91,22 +103,30 @@ public class BattleSystem : MonoBehaviour
 
     IEnumerator PlayerRuffleFeathersAttack()
     {
-        if(Random.Range(1,4) >= 3) { 
+        battleText.text = "*Ruffles Feathers*";
+        playerImage.sprite = playerSprites[3];
+        quack.Play();
+        yield return new WaitForSeconds(1.5f);
+        if (Random.Range(1,4) >= 3) { 
             bool isDead = enemyUnit.TakeDamage(playerUnit.rufflesFeathers);
 
             enemyHUD.SetLove(enemyUnit.currentLove);
-            battleText.text = "*Ruffles Feathers*";
+            enemyImage.sprite = enemySprites[2];
+            battleText.text = enemyUnit.enemyName + " can't stop looking at the cuteness!!!";
+            yield return new WaitForSeconds(2f);
 
             expForAttack = playerUnit.rufflesFeathers / 2;
             currentEXP += expForAttack;
-            CalculateEXP();
-
-            yield return new WaitForSeconds(2f);
-
+            if (CalculateEXP())
+            {
+                yield return new WaitForSeconds(2f);
+            }
             if (isDead)
             {
                 state = BattleState.WIN;
                 EndBattle();
+                yield return new WaitForSeconds(2f);
+                SceneManager.LoadScene("Overworld");
             }
             else
             {
@@ -116,8 +136,9 @@ public class BattleSystem : MonoBehaviour
         }
         else
         {
-            
-            battleText.text = "Thicc Duck laughs! Was not effective";
+            enemyImage.sprite = enemySprites[1];
+            angryQuack.Play();
+            battleText.text = enemyUnit.enemyName + " looks insulted by the gesture";
 
             yield return new WaitForSeconds(2f);
 
@@ -141,26 +162,26 @@ public class BattleSystem : MonoBehaviour
         if (randomAnswer == 1)
         {
             hint1.gameObject.SetActive(true);
-            battleText.text = "Thicc Duck rambles on..";
+            battleText.text = enemyUnit.enemyName + " quacks about their love of cake";
 
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(5f);
             state = BattleState.ENEMYTURN;
             StartCoroutine(EnemyTurn());
         }else if(randomAnswer == 2)
         {
             hint2.gameObject.SetActive(true);
-            battleText.text = "Thicc Duck rambles on..";
+            battleText.text = enemyUnit.enemyName + " quacks about their liking of cookies";
 
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(5f);
             state = BattleState.ENEMYTURN;
             StartCoroutine(EnemyTurn());
         }
         else if(randomAnswer == 3)
         {
             hint3.gameObject.SetActive(true);
-            battleText.text = "Thicc Duck rambles on..";
+            battleText.text = enemyUnit.enemyName + " fucking hates bread. Don't even bring it up ever again.";
 
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(5f);
             state = BattleState.ENEMYTURN;
             StartCoroutine(EnemyTurn());
 
@@ -168,18 +189,18 @@ public class BattleSystem : MonoBehaviour
         else if(randomAnswer == 4)
         {
             hint4.gameObject.SetActive(true);
-            battleText.text = "Thicc Duck rambles on..";
+            battleText.text = enemyUnit.enemyName + " enjoys swimming on the lake";
 
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(5f);
             state = BattleState.ENEMYTURN;
             StartCoroutine(EnemyTurn());
         }
         else if(randomAnswer == 5)
         {
             hint5.gameObject.SetActive(true);
-            battleText.text = "Thicc Duck rambles on..";
+            battleText.text = enemyUnit.enemyName + " thinks thicc boys are best boys";
 
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(5f);
             state = BattleState.ENEMYTURN;
             StartCoroutine(EnemyTurn());
         }
@@ -190,7 +211,9 @@ public class BattleSystem : MonoBehaviour
     IEnumerator EnemyTurn()
     {
         battleText.text = enemyUnit.enemyName + " glares at you";
-
+        angryQuack.Play();
+        playerImage.sprite = playerSprites[0];
+        enemyImage.sprite = enemySprites[1];
         yield return new WaitForSeconds(1f);
 
         bool isDead = playerUnit.TakeDamage(enemyUnit.damage);
@@ -198,27 +221,37 @@ public class BattleSystem : MonoBehaviour
         playerHUD.SetConfidence(playerUnit.currentConfidence);
 
         yield return new WaitForSeconds(2f);
-
+        playerImage.sprite = playerSprites[0];
+        enemyImage.sprite = enemySprites[0];
         if (isDead)
         {
             state = BattleState.LOST;
             EndBattle();
+            yield return new WaitForSeconds(2f);
+            
+            SceneManager.LoadScene("Overworld");
         }
         else
         {
             state = BattleState.PLAYERTURN;
             PlayerTurn();
         }
+       
     }
 
     void EndBattle()
     {
         if(state == BattleState.WIN)
         {
-            battleText.text = "You did it! Thicc Duck has fallen for you!";
+            enemyImage.sprite = enemySprites[2];
+            playerImage.sprite = playerSprites[3];
+            battleText.text = "You did it!" + enemyUnit.enemyName + " has fallen for you!";
         }else if (state == BattleState.LOST)
         {
-            battleText.text = "Oh no! Thicc Duck has waddled away!";
+            enemyImage.sprite = enemySprites[1];
+            enemyImage.transform.eulerAngles = new Vector3(0, 180, 0);
+            playerImage.sprite = playerSprites[2];
+            battleText.text = "Oh no! " + enemyUnit.enemyName + " has waddled away!";
         }
     }
 
@@ -275,25 +308,30 @@ public class BattleSystem : MonoBehaviour
         }
     }
 
-    void CalculateEXP()
+    bool CalculateEXP()
     {
-        if(playerUnit.currentXp < 100)
+        playerUnit.currentXp += currentEXP;
+        if (playerUnit.currentXp < 100)
         {
-            playerUnit.currentXp = currentEXP;
             expBar.value = playerUnit.currentXp;
-        }
-        if (playerUnit.currentXp >= 100)
+            return false;
+        }else 
         {
-            playerUnit.currentXp = 0;
+            playerUnit.currentXp -= 100;
             playerUnit.unitLvl++;
-            LevelUp();
+            playerUnit.maxConfidence += 5;
+            playerUnit.attraction += 5;
+            playerUnit.rufflesFeathers += 3;
+            if (playerUnit.earnedExperience > 2)
+                playerUnit.earnedExperience -= 2;
+            else
+                playerUnit.earnedExperience = 1;
+            playerHUD.LevelUp(playerUnit);
+            expBar.value = playerUnit.currentXp;
+            battleText.text = playerUnit.unitName + " has leveled up. They are now level " + playerUnit.unitLvl;
+            return true;
         }
-        
-    }
 
-    void LevelUp()
-    {
-        playerUnit.attraction += 5;
-        playerUnit.rufflesFeathers += 10;
+
     }
 }
